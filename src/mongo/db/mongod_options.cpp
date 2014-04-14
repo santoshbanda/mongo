@@ -333,6 +333,9 @@ namespace mongo {
                                     .setSources(moe::SourceYAMLConfig)
                                     .format("[^/]+", "[replica set name with no \"/\"]");
 
+        rs_options.addOptionChaining("replication.replSetSkipOpId", moe::UnsignedLongLong,
+                "Secondary skips the op whose uid is same as the uid given in this option");
+
         rs_options.addOptionChaining("replication.secondaryIndexPrefetch", "replIndexPrefetch", moe::String,
                 "specify index prefetching behavior (if secondary) [none|_id_only|all]")
                                     .format("(:?none)|(:?_id_only)|(:?all)",
@@ -954,6 +957,11 @@ namespace mongo {
         }
         if (params.count("autoresync")) {
             replSettings.autoresync = true;
+        }
+        if (params.count("replSetSkipOpId")) {
+            replSettings.replSetSkipOpId =
+                long long) params["replSetSkipOpId"].as<long long>();
+            replSettings.replSetSkipOp = true;
         }
         if (params.count("source")) {
             /* specifies what the source in local.sources should be */

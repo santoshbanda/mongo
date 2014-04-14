@@ -45,6 +45,7 @@
 #include "mongo/db/prefetch.h"
 #include "mongo/db/repl/bgsync.h"
 #include "mongo/db/repl/oplog.h"
+#include "mongo/db/repl/replication_server_status.h" // replSettings
 #include "mongo/db/repl/rs.h"
 #include "mongo/db/repl/rs_sync.h"
 #include "mongo/db/server_parameters.h"
@@ -108,6 +109,15 @@ namespace replset {
             if( *op.getStringField("op") != 'n' ) {
                 error() << "replSet skipping bad op in oplog: " << op.toString() << rsLog;
             }
+            return true;
+        }
+
+        // skip executing op which was set using replSetSkipOpId option
+        if (replSettings.replSetSkipOp &&
+            op.getField("h").numberLong() == replSettings.replSetSkipOpId) {
+            log() << "replSet skipping op which was set using replSetSkipOpId: "
+                  << op.toString() << endl;
+            replSettings.replSetSkipOp = false;
             return true;
         }
 

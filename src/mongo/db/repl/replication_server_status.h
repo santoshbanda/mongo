@@ -57,6 +57,10 @@ namespace mongo {
 
         int slavedelay;
 
+        bool replSetSkipOp;
+
+        long long replSetSkipOpId;
+
         long long oplogSize;   // --oplogSize
 
         // for master/slave replication
@@ -87,6 +91,7 @@ namespace mongo {
             fastsync(),
             autoresync(false),
             slavedelay(),
+            replSetSkipOp(false),
             oplogSize(0),
             pretouch(0),
             discoveredSeeds(),
